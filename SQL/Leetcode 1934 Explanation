@@ -1,0 +1,24 @@
+/* This problem is Leetcode 1934 located at https://buff.ly/3GdtJR2 */
+
+/* This is a fun problem, as taking it step by step brings the challenger through a couple of different requirements of what needs to be completed and has some places that would be easy to get tripped up. On the plus side, it has at least three or four relatively simple solutions to it that would all work. Using AVG or having a separate COUNT(CASE) would both work, although the COUNT(CASE) would probably be a little bit slower both in terms of writing and running. I chose this direction with SUM(IF() because I thought it would be a little cleaner to read in a code snippet than the other two.
+
+1) JOIN the two tables, I elected to SELECT out of signups and do a left join to confirmations, but that's really just personal preference.
+2) Identify what it is that we need to pull for the confirmation rate; it will require a SUM(IF) for confirmed actions for the numerator and a simple COUNT for the denominator. I personally lined these up in the code for easy ability to identify as the fractional part.
+3) Add an IFNULL to deal with line 6; we cannot divide 0.
+4) Use ROUND for the correct amount of digits.
+5) Set up how they are grouped, by user_id. 
+
+Done!
+
+*/
+SELECT signups.user_id,
+       ROUND(
+           IFNULL
+                        (SUM(IF(action = 'confirmed', 1, 0)) 
+                        / COUNT(*),
+                0),
+             2) AS confirmation_rate
+FROM Signups
+    LEFT OUTER JOIN Confirmations
+                 ON signups.user_id = confirmations.user_id
+GROUP BY signups.user_id
